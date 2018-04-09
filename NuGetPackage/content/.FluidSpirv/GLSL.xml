@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions 
+  xmlns="http://schemas.microsoft.com/build/2009/properties"
+  >
+
+  <!-- Content Type -->
+  <ContentType Name="Glsl" DisplayName="OpenGL Shading Language" ItemType="Glsl" />
+  <ItemType Name="Glsl" DisplayName="OpenGL Shading Language" />
+  <FileExtension Name=".glsl;.vert;.frag;.geom;.comp;.tese;.tesc" ContentType="Glsl" />
+
+  <!-- Property Page -->
+  <Rule Name="Glsl" DisplayName="OpenGL Shading Language" Order="500" PageTemplate="tool"   >
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General" />
+    </Rule.Categories>
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="Glsl" HasConfigurationCondition="true" />
+    </Rule.DataSource>
+    <BoolProperty Name="Verbose" DisplayName="Verbose" Description="Specifies verbose output." Category="General" Default="false" />
+    <BoolProperty Name="Vulkan" DisplayName="For Vulkan" Description="Specifies whether or not the shader is being compiled for Vulkan." Category="General" Default="true" />
+    <EnumProperty Name="ShaderType" DisplayName="Shader Type" Description="The type of the shader (e.g. vertex, geometry, etc.)" Category="General" Default="Auto">
+      <EnumValue Name="Auto" DisplayName="Auto" />
+      <EnumValue Name="Fragment" DisplayName="Fragment" />
+      <EnumValue Name="Vertex" DisplayName="Vertex" />
+      <EnumValue Name="Geometry" DisplayName="Geometry" />
+      <EnumValue Name="Compute" DisplayName="Compute" />
+      <EnumValue Name="TesC" DisplayName="Tesselation Control" />
+      <EnumValue Name="TesE" DisplayName="Tesselation Evaluation" />
+    </EnumProperty>
+  </Rule>
+  
+</ProjectSchemaDefinitions>

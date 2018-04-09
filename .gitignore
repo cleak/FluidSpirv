@@ -297,3 +297,9 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
+
+
+###############################
+# Additional entries
+SpirvTester/
+NuGetPackage/content/.FluidSpirv/FluidSpirv.dll

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Define the Glsl content type -->
+  <ItemGroup>
+    <PropertyPageSchema Include="$(ProjectDir).FluidSpirv\GLSL.xml" />
+    <AvailableItemName Include="Glsl">
+      <Targets>GlslCompile</Targets>
+    </AvailableItemName>
+  </ItemGroup>
+
+  <!-- Include targets in build and clean passes -->
+  <PropertyGroup>
+    <CompileDependsOn>$(CompileDependsOn);GlslCompile</CompileDependsOn>
+    <CleanDependsOn>$(CleanDependsOn);CleanGlslProvider</CleanDependsOn>
+  </PropertyGroup>
+
+  <!-- Load the EventProviderGenerator assembly -->
+  <UsingTask TaskName="FluidSpirv.GlslBuilder" AssemblyFile="$(ProjectDir).FluidSpirv\FluidSpirv.dll"/>
+
+  <!-- Create the event-provider manifest and its associated headers and resources -->
+  <Target Name="GlslCompile"
+          Inputs="@(Glsl.FullPath)"
+          Outputs="@(Glsl -> '$(ProjectDir)Spirv\%(Filename).%(Extension).spv')"
+          >
+    <Message Importance="high" Text="Processing %(Glsl.FullPath)" />
+    <GlslBuilder
+      InFile="%(Glsl.FullPath)"
+      OutFile="$(ProjectDir)Spirv\%(Filename).spv"
+      ShaderTypeStr="%(Glsl.ShaderType)"
+      Verbose="%(Glsl.Verbose)"
+      Vulkan="%(Glsl.Vulkan)"
+    />
+  </Target>
+
+  <!-- Cleanup -->
+  <Target Name="CleanGlslProvider" BeforeTargets="Clean">
+    <Message Importance="high" Text="Cleaning all SPIR-V" />
+    <!-- TODO: Actually clean! -->
+    <!-- RemoveDir Directories="$(ProjectDir)Events\" / -->
+  </Target>
+
+  <PropertyGroup>  
+    <BuildDependsOn>  
+        GlslCompile;  
+        $(BuildDependsOn);  
+    </BuildDependsOn>  
+  </PropertyGroup>  
+
+</Project>

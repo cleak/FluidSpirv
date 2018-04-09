@@ -1,0 +1,1 @@
+SPIR-V compiler integration. Build your shaders from right inside Visual Studio.

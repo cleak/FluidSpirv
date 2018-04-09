@@ -2,11 +2,11 @@
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System.Diagnostics;
-using System.Threading;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace FluidSpirv {
-    public class SpirvBuilder : Task {
+    public class GlslBuilder : Task {
         [Required]
         public string InFile { get; set; }
 
@@ -34,7 +34,6 @@ namespace FluidSpirv {
             }
         }
 
-        [Required]
         public string ShaderTypeStr { get; set; }
 
         public bool Verbose { get; set; }
@@ -42,6 +41,17 @@ namespace FluidSpirv {
         public bool Vulkan { get; set; }
 
         public override bool Execute() {
+            string outDir = Path.GetDirectoryName(OutFile);
+
+            if (!Directory.Exists(outDir)) {
+                try {
+                    Directory.CreateDirectory(outDir);
+                } catch (IOException e) {
+                    Log.LogError("Failed to create directory " + outDir);
+                    return false;
+                }
+            }
+
             Process p = new Process();
             p.StartInfo.FileName = @"glslangValidator.exe";
             string args = "";
@@ -98,49 +108,17 @@ namespace FluidSpirv {
                 return false;
             }
 
-            /*while (!p.HasExited) {
-                string stdOut = "";
-                string stdErr = "";
-
-                while (p.StandardOutput.Peek() >= 0) {
-                    stdOut += (char)p.StandardOutput.Read();
-                }
-
-                if (stdOut.Length > 0) {
-                    Log.LogMessage(MessageImportance.High, stdOut);
-                }
-
-                while (p.StandardError.Peek() >= 0) {
-                    stdErr += (char)p.StandardError.Read();
-                }
-
-                if (stdErr.Length > 0) {
-                    Log.LogError(null, null, null, Filename,
-                        -1, -1, -1, -1, stdErr);
-                }
-
-                Thread.Yield();
-            }*/
             p.WaitForExit();
 
             Regex errorRgx = new Regex(@"^ERROR:\s+(.+):(\d+): (.*)$");
 
-            //while (p.StandardError.Peek() >= 0) {
             while (p.StandardOutput.Peek() >= 0) {
                 string line = p.StandardOutput.ReadLine();
 
                 Match m = errorRgx.Match(line);
                 if (m.Success) {
-                    for (int j = 0; j < m.Groups.Count; j++) {
-                        Capture c = m.Groups[j].Captures[0];
-                        Log.LogMessage(MessageImportance.High, "Capture" + j + "='" + c + "', Position=" + c.Index);
-                    }
-
-
                     string srcFile = m.Groups[1].Captures[0].Value;
                     int lineNum = int.Parse(m.Groups[2].Captures[0].Value);
-                    //int colNum = int.Parse(m.Groups[1].Captures[0].Value);
-                    Log.LogMessage(MessageImportance.High, "<{0}, {1}>", lineNum, 0);
                     string message = m.Groups[3].Captures[0].Value;
                     Log.LogError(null, null, null, srcFile,
                         lineNum, 0, 0, 0, message);
