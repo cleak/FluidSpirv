@@ -41,6 +41,8 @@ namespace FluidSpirv {
         public bool Vulkan { get; set; }
 
         public override bool Execute() {
+            string projDir = Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode);
+
             string outDir = Path.GetDirectoryName(OutFile);
 
             if (!Directory.Exists(outDir)) {
@@ -53,7 +55,13 @@ namespace FluidSpirv {
             }
 
             Process p = new Process();
-            p.StartInfo.FileName = @"glslangValidator.exe";
+            p.StartInfo.FileName = projDir + @"\.FluidSpirv\glslangValidator.exe";
+
+            if (!File.Exists(p.StartInfo.FileName)) {
+                Log.LogError("Missing glslang executable. Expected at " + p.StartInfo.FileName);
+                return false;
+            }
+
             string args = "";
 
             switch (ShaderType) {
@@ -111,6 +119,7 @@ namespace FluidSpirv {
             p.WaitForExit();
 
             Regex errorRgx = new Regex(@"^ERROR:\s+(.+):(\d+): (.*)$");
+            Regex ignoreErrorCount = new Regex(@"^ERROR:\s+(\d+)\s+compilation errors?.\s+No code generated.\s*$");
 
             while (p.StandardOutput.Peek() >= 0) {
                 string line = p.StandardOutput.ReadLine();
@@ -118,13 +127,26 @@ namespace FluidSpirv {
                 Match m = errorRgx.Match(line);
                 if (m.Success) {
                     string srcFile = m.Groups[1].Captures[0].Value;
-                    int lineNum = int.Parse(m.Groups[2].Captures[0].Value);
                     string message = m.Groups[3].Captures[0].Value;
-                    Log.LogError(null, null, null, srcFile,
-                        lineNum, 0, 0, 0, message);
+
+                    if (message.StartsWith("'' : compilation terminated")) {
+                        // Suppress messages superfluous error messages
+                        continue;
+                    }
+
+                    try {
+                        int lineNum = int.Parse(m.Groups[2].Captures[0].Value);
+                        Log.LogError(null, null, null, srcFile, lineNum, 0, 0, 0, message);
+                    } catch (FormatException e) {
+                        Log.LogError(null, null, null, srcFile, 0, 0, 0, 0, message);
+                    }
                 } else if (line.StartsWith("ERROR")) {
-                    Log.LogError(null, null, null, InFile,
-                        0, 0, 0, 0, line);
+                    if (ignoreErrorCount.Match(line).Success) {
+                        // Suppress error count
+                        continue;
+                    }
+
+                    Log.LogError(null, null, null, InFile, 0, 0, 0, 0, line);
                 }
             }
 
