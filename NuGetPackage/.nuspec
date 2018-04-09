@@ -36,7 +36,7 @@
     <copyright>Copyright ©2018 Caleb Leak</copyright>
 
     <!-- Tags appear in the gallery and can be used for tag searches -->
-    <tags>glsl spirv opengl vulkan glslang</tags>
+    <tags>glsl, spirv, opengl, vulkan, glslang, native</tags>
 
     <!-- Dependencies are automatically installed when the package is installed -->
     <dependencies>
@@ -46,5 +46,9 @@
     <!-- A readme.txt to display when the package is installed -->
     <files>
         <file src="readme.txt" target="" />
+        <file src="FluidSpirv.targets" target="\build\native\FluidSpirv.targets" />
+        <file src="..\FluidSpirv\bin\Release\FluidSpirv.dll" target="\content\.FluidSpirv\FluidSpirv.dll" />
+        <file src="GLSL.xml" target="\content\.FluidSpirv\GLSL.xml" />
+        <file src="glslangValidator.exe" target="\bin\glslangValidator.exe" />
     </files>
 </package>

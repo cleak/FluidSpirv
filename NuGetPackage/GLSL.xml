@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions 
+  xmlns="http://schemas.microsoft.com/build/2009/properties"
+  >
+
+  <!-- ItemDefinitionGroup>
+      <GLSL>
+        <BoolProperty Name="FindMeItem" DisplayName="FindMeItem" Description="Specifies verbose output." Category="General" Default="false" />
+      </GLSL>
+  </ItemDefinitionGroup -->
+
+  <!-- Content Type -->
+  <!-- ItemType Name="GLSL" / -->
+  <ContentType Name="GLSL" DisplayName="OpenGL Shading Language" ItemType="GLSL" />
+  <FileExtension Name=".glsl;.vert;.frag;.geom;.comp;.tese;.tesc" ContentType="GLSL" />
+
+  <!-- Property Page -->
+  <Rule Name="GLSL" DisplayName="OpenGL Shading Language" Order="500" PageTemplate="tool"   >
+    <Rule.Categories>
+      <Category Name="General" DisplayName="General" />
+    </Rule.Categories>
+    <Rule.DataSource>
+      <DataSource Persistence="ProjectFile" ItemType="GLSL" HasConfigurationCondition="true" />
+    </Rule.DataSource>
+
+    <BoolProperty Name="Verbose" DisplayName="Verbose" Description="Specifies verbose output." Category="General" Default="false" />
+
+    <EnumProperty Name="TargetApi" DisplayName="Target API" Description="The target API for the shader (e.g. Vulkan or OpenGL)." Category="General" Default="Vulkan">
+      <EnumValue Name="Vulkan" DisplayName="Vulkan" />
+      <EnumValue Name="OpenGL" DisplayName="OpenGL" />
+    </EnumProperty>
+
+    <EnumProperty Name="ShaderType" DisplayName="Shader Type" Description="The type of the shader (e.g. vertex, geometry, etc.)" Category="General" Default="Auto">
+      <EnumValue Name="Auto" DisplayName="Auto" />
+      <EnumValue Name="Fragment" DisplayName="Fragment" />
+      <EnumValue Name="Vertex" DisplayName="Vertex" />
+      <EnumValue Name="Geometry" DisplayName="Geometry" />
+      <EnumValue Name="Compute" DisplayName="Compute" />
+      <EnumValue Name="TesC" DisplayName="Tesselation Control" />
+      <EnumValue Name="TesE" DisplayName="Tesselation Evaluation" />
+    </EnumProperty>
+  </Rule>
+  
+</ProjectSchemaDefinitions>

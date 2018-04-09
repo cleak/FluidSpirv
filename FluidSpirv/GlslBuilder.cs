@@ -36,9 +36,25 @@ namespace FluidSpirv {
 
         public string ShaderTypeStr { get; set; }
 
-        public bool Verbose { get; set; }
+        public enum Apis {
+            Vulkan,
+            OpenGL
+        }
 
-        public bool Vulkan { get; set; }
+        public Apis TargetApi {
+            get {
+                Apis val;
+                if (Enum.TryParse(TargetApiStr, out val)) {
+                    return val;
+                } else {
+                    return Apis.Vulkan;
+                }
+            }
+        }
+
+        public string TargetApiStr { get; set; }
+
+        public bool Verbose { get; set; }
 
         public override bool Execute() {
             string projDir = Path.GetDirectoryName(BuildEngine.ProjectFileOfTaskNode);
@@ -55,7 +71,7 @@ namespace FluidSpirv {
             }
 
             Process p = new Process();
-            p.StartInfo.FileName = projDir + @"\.FluidSpirv\glslangValidator.exe";
+            p.StartInfo.FileName = projDir + @"\..\..\bin\glslangValidator.exe";
 
             if (!File.Exists(p.StartInfo.FileName)) {
                 Log.LogError("Missing glslang executable. Expected at " + p.StartInfo.FileName);
@@ -93,7 +109,7 @@ namespace FluidSpirv {
                     break;
             }
 
-            if (Vulkan) {
+            if (TargetApi == Apis.Vulkan) {
                 args += "-V ";
             } else {
                 args += "-G ";

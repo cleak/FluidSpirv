@@ -3,8 +3,8 @@
 
   <!-- Define the Glsl content type -->
   <ItemGroup>
-    <PropertyPageSchema Include="$(ProjectDir).FluidSpirv\GLSL.xml" />
-    <AvailableItemName Include="Glsl">
+    <PropertyPageSchema Include="$(ProjectDir)\.FluidSpirv\GLSL.xml" />
+    <AvailableItemName Include="GLSL">
       <Targets>GlslCompile</Targets>
     </AvailableItemName>
   </ItemGroup>
@@ -16,20 +16,20 @@
   </PropertyGroup>
 
   <!-- Load the EventProviderGenerator assembly -->
-  <UsingTask TaskName="FluidSpirv.GlslBuilder" AssemblyFile="$(ProjectDir).FluidSpirv\FluidSpirv.dll"/>
+  <UsingTask TaskName="FluidSpirv.GlslBuilder" AssemblyFile="$(ProjectDir)\.FluidSpirv\FluidSpirv.dll"/>
 
   <!-- Create the event-provider manifest and its associated headers and resources -->
   <Target Name="GlslCompile"
-          Inputs="@(Glsl.FullPath)"
-          Outputs="@(Glsl -> '$(ProjectDir)Spirv\%(Filename).%(Extension).spv')"
+          Inputs="@(GLSL.FullPath)"
+          Outputs="@(GLSL -> '$(ProjectDir)\Spirv\%(Filename)%(Extension).spv')"
           >
-    <Message Importance="high" Text="Processing %(Glsl.FullPath)" />
+    <Message Importance="high" Text="Processing %(GLSL.FullPath)" />
     <GlslBuilder
-      InFile="%(Glsl.FullPath)"
+      InFile="%(GLSL.FullPath)"
       OutFile="$(ProjectDir)Spirv\%(Filename).spv"
-      ShaderTypeStr="%(Glsl.ShaderType)"
-      Verbose="%(Glsl.Verbose)"
-      Vulkan="%(Glsl.Vulkan)"
+      ShaderTypeStr="%(GLSL.ShaderType)"
+      Verbose="%(GLSL.Verbose)"
+      TargetApiStr="%(GLSL.TargetApi)"
     />
   </Target>
 
